@@ -1,8 +1,13 @@
 import User from '../models/User';
+import * as Yup from 'yup';
 
 class SessionController {
   
   async store(req, res){
+    const schema = Yup.object().shape({
+      email: Yup.string().required(),
+    });
+    
     const { email } = req.body;
     let user = await User.findOne({ email });
 

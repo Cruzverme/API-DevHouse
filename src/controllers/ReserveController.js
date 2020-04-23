@@ -1,6 +1,7 @@
 import Reserve from "../models/Reserve";
 import User from "../models/User";
 import House from "../models/House";
+import * as Yup from 'yup';
 
 class ReserveController {
 
@@ -13,6 +14,10 @@ class ReserveController {
   }
 
   async store(req, res) {
+    const schema = Yup.object().shape({
+      date: Yup.string().required(),
+    });
+
     const { user_id } = req.headers;
     const { house_id } = req.params;
     const { date } = req.body;
@@ -20,6 +25,10 @@ class ReserveController {
     const house = await House.findById(house_id);
     const user = await User.findById(user_id);
 
+    if(!(await schema.isValid(req.body))){
+      return res.status(400).json({ error: 'Fail Validation'})
+    }
+    
     if(!house){
       return res.status(400).json({error: "Invalid House"});
     }
